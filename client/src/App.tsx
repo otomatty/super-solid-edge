@@ -1,12 +1,11 @@
-import { Router, Route } from "@solidjs/router";
-import HomePage from "./pages/site/Home/HomePage";
-import RegisterPage from "./pages/site/Register/RegisterPage";
-import LoginPage from "./pages/site/Login/LoginPage";
-import DashboardPage from "./pages/app/Dashboard/DashboardPage";
-import SetupPage from "./pages/app/Setup/SetupPage";
-import FeaturesPage from "./pages/site/Features/FeaturesPage";
-import DocumentationPage from "./pages/site/Documentation/DocumentationPage";
-import ProtectedRoute from "./components/ProtectRoute";
+import { Router, Route } from '@solidjs/router';
+import HomePage from './pages/site/Home/HomePage';
+import DashboardPage from './pages/app/Dashboard/DashboardPage';
+import FeaturesPage from './pages/site/Features/FeaturesPage';
+import DocumentationPage from './pages/site/Documentation/DocumentationPage';
+import AuthPage from './pages/site/Auth/AuthPage';
+import SetupPage from './pages/app/Setup/SetupPage';
+import ProtectedRoute from './components/ProtectRoute';
 
 function App() {
   return (
@@ -14,8 +13,7 @@ function App() {
       <Route path="/" component={HomePage} />
       <Route path="/features" component={FeaturesPage} />
       <Route path="/docs" component={DocumentationPage} />
-      <Route path="/register" component={RegisterPage} />
-      <Route path="/login" component={LoginPage} />
+      <Route path="/auth" component={AuthPage} />
       <Route
         path="/dashboard"
         component={() => (
