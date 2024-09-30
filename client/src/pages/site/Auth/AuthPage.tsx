@@ -1,4 +1,4 @@
-import { createSignal, Show } from 'solid-js';
+import { createSignal, createEffect, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { supabase } from '../../../config/supabase';
 import { useAuth } from '../../../context/AuthContext';
@@ -13,20 +13,38 @@ import {
   authButton,
   authToggle,
   authToggleLink,
+  loadingOverlay,
 } from './AuthPage.css';
+import { OAuthResponse } from '@supabase/supabase-js';
 
 function AuthPage() {
+  const navigate = useNavigate();
+  const { user, setUser, isLoading: authLoading, checkUserProfile } = useAuth();
+
   const [email, setEmail] = createSignal('');
   const [password, setPassword] = createSignal('');
   const [isLogin, setIsLogin] = createSignal(true);
   const [message, setMessage] = createSignal('');
-  const [isLoading, setIsLoading] = createSignal(false);
-  const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const [isSubmitting, setIsSubmitting] = createSignal(false);
+
+  createEffect(() => {
+    if (!authLoading()) {
+      const currentUser = user();
+      if (currentUser) {
+        checkUserProfile(currentUser.id).then((hasProfile) => {
+          if (hasProfile) {
+            navigate('/dashboard');
+          } else {
+            navigate('/setup');
+          }
+        });
+      }
+    }
+  });
 
   const handleAuth = async (e: Event) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsSubmitting(true);
     setMessage('');
 
     try {
@@ -56,80 +74,93 @@ function AuthPage() {
         setMessage('An unknown error occurred');
       }
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     setMessage('');
 
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
+      const { data, error }: OAuthResponse =
+        await supabase.auth.signInWithOAuth({
+          provider: 'google',
+        });
 
       if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No URL returned from OAuth sign in');
+      }
     } catch (error) {
       if (error instanceof Error) {
         setMessage(error.message);
       } else {
         setMessage('An unknown error occurred');
       }
-    } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div class={authContainer}>
-      <div class={authCard}>
-        <h1 class={authTitle}>{isLogin() ? 'Login' : 'Register'}</h1>
-        <form onSubmit={handleAuth} class={authForm}>
-          <TextField>
-            <TextField.Input
-              type="email"
-              placeholder="Email"
-              value={email()}
-              onInput={(e) => setEmail(e.currentTarget.value)}
-              required
-            />
-          </TextField>
-          <TextField>
-            <TextField.Input
-              type="password"
-              placeholder="Password"
-              value={password()}
-              onInput={(e) => setPassword(e.currentTarget.value)}
-              required
-            />
-          </TextField>
-          <Button type="submit" disabled={isLoading()} class={authButton}>
-            {isLoading() ? 'Loading...' : isLogin() ? 'Login' : 'Register'}
-          </Button>
-        </form>
-        <Button
-          onClick={handleGoogleSignIn}
-          disabled={isLoading()}
-          class={authButton}
-        >
-          Sign in with Google
-        </Button>
-        <Show when={message()}>
-          <Alert>{message()}</Alert>
-        </Show>
-        <p class={authToggle}>
-          <a
-            href="#"
-            onClick={() => setIsLogin(!isLogin())}
-            class={authToggleLink}
+      <Show when={authLoading()}>
+        <div class={loadingOverlay}>
+          <div>Loading...</div>
+        </div>
+      </Show>
+      <Show when={!authLoading()}>
+        <div class={authCard}>
+          <h1 class={authTitle}>{isLogin() ? 'Login' : 'Register'}</h1>
+          <form onSubmit={handleAuth} class={authForm}>
+            <TextField>
+              <TextField.Input
+                type="email"
+                placeholder="Email"
+                value={email()}
+                onInput={(e) => setEmail(e.currentTarget.value)}
+                required
+              />
+            </TextField>
+            <TextField>
+              <TextField.Input
+                type="password"
+                placeholder="Password"
+                value={password()}
+                onInput={(e) => setPassword(e.currentTarget.value)}
+                required
+              />
+            </TextField>
+            <Button type="submit" disabled={isSubmitting()} class={authButton}>
+              {isSubmitting() ? 'Loading...' : isLogin() ? 'Login' : 'Register'}
+            </Button>
+          </form>
+          <Button
+            onClick={handleGoogleSignIn}
+            disabled={isSubmitting()}
+            class={authButton}
           >
-            {isLogin()
-              ? 'Need an account? Register'
-              : 'Already have an account? Login'}
-          </a>
-        </p>
-      </div>
+            Sign in with Google
+          </Button>
+          <Show when={message()}>
+            <Alert>{message()}</Alert>
+          </Show>
+          <p class={authToggle}>
+            <a
+              href="#"
+              onClick={() => setIsLogin(!isLogin())}
+              class={authToggleLink}
+            >
+              {isLogin()
+                ? 'Need an account? Register'
+                : 'Already have an account? Login'}
+            </a>
+          </p>
+        </div>
+      </Show>
     </div>
   );
 }

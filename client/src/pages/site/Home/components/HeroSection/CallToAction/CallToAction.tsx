@@ -1,15 +1,15 @@
-import { A } from "@solidjs/router";
+import { A } from '@solidjs/router';
 import {
   callToAction,
   button,
   primaryButton,
   secondaryButton,
-} from "./CallToAction.css";
+} from './CallToAction.css';
 
 export function CallToAction() {
   return (
     <div class={callToAction}>
-      <A href="/register" class={`${button} ${primaryButton}`}>
+      <A href="/auth" class={`${button} ${primaryButton}`}>
         今すぐ始める
       </A>
       <A href="/docs" class={`${button} ${secondaryButton}`}>
