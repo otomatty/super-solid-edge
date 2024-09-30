@@ -8,7 +8,7 @@
 - バックエンド: Supabase, Hono on Cloudflare Workers
 - デスクトップアプリケーション: Tauri
 - データベース: Supabase
-- スタイリング: Kobalte, UnoCSS
+- スタイリング: Kobalte, Vanilla Extract
 
 ## セットアップ
 
@@ -99,8 +99,10 @@ npm run test
 ## 詳細情報
 
 - [Solid.js ドキュメント](https://solidjs.com)
-- [Supabase ドキュメン ���](https://supabase.io/docs)
+- [Supabase ドキュメント](https://supabase.io/docs)
 - [Hono ドキュメント](https://hono.dev)
+- [Vanilla Extract ドキュメント](https://vanilla-extract.style/)
+- [Kobalte ドキュメント](https://kobalte.dev/docs/core/overview/introduction/)
 - [Cloudflare Workers ドキュメント](https://developers.cloudflare.com/workers/)
 - [Tauri ドキュメント](https://tauri.app)
 

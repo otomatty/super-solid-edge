@@ -1,18 +1,19 @@
-import { A } from "@solidjs/router";
+import HeroSection from "./components/HeroSection/HeroSection";
+import TechStackSection from "./components/TechStackSection/TechStackSection";
+import FeaturesSection from "./components/FeaturesSection/FeaturesSection";
+import CrossPlatformSection from "./components/CrossPlatformSection/CrossPlatformSection";
+import GettingStartedSection from "./components/GettingStartedSection/GettingStartedSection";
+import Footer from "../../../components/site/Footer/Footer";
 
 function HomePage() {
   return (
     <div>
-      <h1>Welcome to Super Solid Edge</h1>
-      <p>
-        This is a full-stack web application template using Solid.js, Supabase,
-        and Cloudflare Workers (Hono).
-      </p>
-      <p>You can register and log in to access more features.</p>
-      <div>
-        <A href="/register">Register</A>
-        <A href="/login">Login</A>
-      </div>
+      <HeroSection />
+      <TechStackSection />
+      <FeaturesSection />
+      <CrossPlatformSection />
+      <GettingStartedSection />
+      <Footer />
     </div>
   );
 }
